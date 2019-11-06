@@ -7,8 +7,7 @@
 #include "sonata_data.hpp"
 
 SonataData::SonataData(const std::string& report_name, size_t max_buffer_size, int num_steps, double dt, double tstart, double tend, std::shared_ptr<nodes_t> nodes)
-: m_report_name(report_name), m_num_steps(num_steps), m_nodes(nodes), m_last_position(0), m_current_step(0),
-m_total_elements(0), m_remaining_steps(0), m_buffer_size(0), m_steps_to_write(0), m_steps_recorded(0) {
+: m_report_name(report_name), m_num_steps(num_steps), m_nodes(nodes) {
 
     prepare_buffer(max_buffer_size);
     m_index_pointers.resize(nodes->size());
@@ -20,9 +19,7 @@ m_total_elements(0), m_remaining_steps(0), m_buffer_size(0), m_steps_to_write(0)
     m_io_writer = std::make_unique<HDF5Writer>(report_name);
 }
 
-SonataData::SonataData(const std::string& report_name, const std::vector<double>& spike_timestamps, const std::vector<int>& spike_node_ids)
-: m_last_position(0), m_current_step(0), m_total_elements(0), m_remaining_steps(0), m_buffer_size(0), m_steps_to_write(0), m_steps_recorded(0) {
-
+SonataData::SonataData(const std::string& report_name, const std::vector<double>& spike_timestamps, const std::vector<int>& spike_node_ids) {
     m_spike_timestamps = spike_timestamps;
     m_spike_node_ids = spike_node_ids;
     m_io_writer = std::make_unique<HDF5Writer>(report_name);

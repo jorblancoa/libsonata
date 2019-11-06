@@ -35,17 +35,16 @@ class SonataData {
   private:
     std::string m_report_name;
     std::vector<double> m_report_buffer;
-    size_t m_buffer_size;
-    int m_total_elements;
-    int m_num_steps;
-    int m_steps_to_write;
-    int m_current_step;
-    int m_steps_recorded;
-    int m_last_position;
-    int m_remaining_steps;
-    int m_reporting_period;
-    double m_last_step_recorded;
-    double m_last_step;
+    int m_total_elements = 0;
+    int m_num_steps = 0;
+    int m_steps_to_write = 0;
+    int m_current_step = 0;
+    int m_steps_recorded = 0;
+    int m_last_position = 0;
+    int m_remaining_steps = 0;
+    int m_reporting_period = 0;
+    double m_last_step_recorded = 0.;
+    double m_last_step = 0.;
 
     std::vector<uint64_t> m_node_ids;
     std::vector<uint64_t> m_index_pointers;
