@@ -49,7 +49,7 @@ SCENARIO( "Test SonataData class", "[SonataData][IOWriter]" ) {
             THEN("The buffer size is the total number of steps times the total number of elements") {
                 // 1024 / sizeof(double) / 11 = 11.6 > 3 (total number of steps)
                 // buffer_size = 11 * 3
-                REQUIRE(sonata->get_buffer_size() == 33);
+                REQUIRE(sonata->get_report_buffer().size() == 33);
             }
 
             THEN("We check the node ids of the sonata report") {
@@ -91,7 +91,7 @@ SCENARIO( "Test SonataData class", "[SonataData][IOWriter]" ) {
             THEN("The buffer size is the number of steps to write that fit on the buffer times the total elements") {
                 // 256 / sizeof(double) / 11 = 2
                 // buffer_size = 11 * 2
-                REQUIRE(sonata2->get_buffer_size() == 22);
+                REQUIRE(sonata2->get_report_buffer().size() == 22);
             }
         }
     }

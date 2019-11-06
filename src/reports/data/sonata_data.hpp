@@ -22,8 +22,6 @@ class SonataData {
     void record_data(double step);
     void update_timestep(double timestep);
 
-    int get_num_steps() const { return m_num_steps; }
-    size_t get_buffer_size() const { return m_buffer_size; }
     const std::vector<double>& get_report_buffer() const { return m_report_buffer; }
 
     const std::vector<uint64_t>& get_node_ids() const { return m_node_ids; }

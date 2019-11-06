@@ -82,7 +82,7 @@ void SonataData::record_data(double step, const std::vector<uint64_t>& node_ids)
     int local_position = m_last_position + m_total_elements * offset;
     if(ReportingLib::m_rank == 0) {
         logger->trace("RANK={} Recording data for step={} last_step_recorded={} first GID={} buffer_size={} and offset={}",
-                    ReportingLib::m_rank, step, m_last_step_recorded, node_ids[0], m_buffer_size, local_position);
+                    ReportingLib::m_rank, step, m_last_step_recorded, node_ids[0], m_report_buffer.size(), local_position);
     }
     for (auto &kv: *m_nodes) {
         int current_gid = kv.first;
@@ -108,7 +108,7 @@ void SonataData::record_data(double step) {
     int local_position = m_last_position;
     if(ReportingLib::m_rank == 0) {
         logger->trace("RANK={} Recording data for step={} last_step_recorded={} buffer_size={} and offset={}", 
-                    ReportingLib::m_rank, step, m_last_step_recorded, m_buffer_size, local_position);
+                    ReportingLib::m_rank, step, m_last_step_recorded, m_report_buffer.size(), local_position);
     }
     for (auto &kv: *m_nodes) {
         int current_gid = kv.first;
