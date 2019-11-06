@@ -27,38 +27,46 @@ SonataData::SonataData(const std::string& report_name, const std::vector<double>
 
 void SonataData::prepare_buffer(size_t max_buffer_size) {
     logger->trace("Prepare buffer for {}", m_report_name);
+
     for (auto& kv : *m_nodes) {
         m_total_elements += kv.second->get_num_elements();
     }
-    if(m_total_elements > 0) {
-        // Calculate the timesteps that fit given a buffer size
+
+    // Nothing to prepare as there is no element in those nodes
+    if(m_total_elements == 0) {
+        return;
+    }
+
+    // Calculate the timesteps that fit given the buffer size
+    {
         int max_steps_to_write = max_buffer_size / sizeof(double) / m_total_elements;
-        if (max_steps_to_write < m_num_steps) {
+        if (max_steps_to_write < m_num_steps) { // More step asked that buffer can contains
             if(max_steps_to_write < ReportingLib::m_min_steps_to_record) {
                 m_steps_to_write = ReportingLib::m_min_steps_to_record;
             } else {
                 // Minimum 1 timestep required to write
-                m_steps_to_write = max_steps_to_write > 0? max_steps_to_write: 1;
+                m_steps_to_write = max_steps_to_write > 0 ? max_steps_to_write: 1;
             }
-        } else {
+        } else { // all the step asked fit into the given buffer
             // If the buffer size is bigger that all the timesteps needed to record we allocate only the amount of timesteps
             m_steps_to_write = m_num_steps;
         }
+    }
 
-        m_remaining_steps = m_num_steps;
+    m_remaining_steps = m_num_steps;
 
-        if(ReportingLib::m_rank == 0) {
-            logger->debug("-Total elements: {}", m_total_elements);
-            logger->debug("-Num steps: {}", m_num_steps);
-            logger->debug("-Steps to write: {}", m_steps_to_write);
-            logger->debug("-Max Steps to write: {}", max_steps_to_write);
-            logger->debug("-Max Buffer size: {}", max_buffer_size);
-        }
-        m_buffer_size = m_total_elements * (m_steps_to_write);
-        m_report_buffer.resize(m_buffer_size);
-        if(ReportingLib::m_rank == 0) {
-            logger->debug("-Buffer size: {}", m_buffer_size);
-        }
+    if(ReportingLib::m_rank == 0) {
+        logger->debug("-Total elements: {}", m_total_elements);
+        logger->debug("-Num steps: {}", m_num_steps);
+        logger->debug("-Steps to write: {}", m_steps_to_write);
+        logger->debug("-Max Buffer size: {}", max_buffer_size);
+    }
+
+    size_t m_buffer_size = m_total_elements * (m_steps_to_write);
+    m_report_buffer.resize(m_buffer_size);
+
+    if(ReportingLib::m_rank == 0) {
+        logger->debug("-Buffer size: {}", m_buffer_size);
     }
 }
 
@@ -125,24 +133,25 @@ void SonataData::record_data(double step) {
 }
 
 void SonataData::update_timestep(double timestep) {
-    if(m_remaining_steps > 0) {
-        if(ReportingLib::m_rank == 0) {
-            logger->trace("Updating timestep t={}", timestep);
-        }
-        m_current_step += m_steps_recorded;
-        m_last_position += m_total_elements * m_steps_recorded;
-        m_last_step_recorded += m_reporting_period * m_steps_recorded;
-        m_nodes_recorded.clear();
-        
-        // Write when buffer is full, finish all remaining recordings or when record several steps in a row
-        if(m_current_step == m_steps_to_write || m_current_step == m_remaining_steps || m_steps_recorded > 1) {
-            if(ReportingLib::m_rank == 0) {
-                logger->trace("Writing to file {}! steps_to_write={}, current_step={}, remaining_steps={}", m_report_name, m_steps_to_write, m_current_step, m_remaining_steps);
-            }    
-            write_data();
-        }
-        m_steps_recorded = 0;
+    if(m_remaining_steps <= 0) {
+        return;
     }
+
+    if(ReportingLib::m_rank == 0) {
+        logger->trace("Updating timestep t={}", timestep);
+    }
+    m_current_step += m_steps_recorded;
+    m_last_position += m_total_elements * m_steps_recorded;
+    m_last_step_recorded += m_reporting_period * m_steps_recorded;
+    m_nodes_recorded.clear();
+    // Write when buffer is full, finish all remaining recordings or when record several steps in a row
+    if(m_current_step == m_steps_to_write || m_current_step == m_remaining_steps || m_steps_recorded > 1) {
+        if(ReportingLib::m_rank == 0) {
+            logger->trace("Writing to file {}! steps_to_write={}, current_step={}, remaining_steps={}", m_report_name, m_steps_to_write, m_current_step, m_remaining_steps);
+        }    
+        write_data();
+    }
+    m_steps_recorded = 0;
 }
 
 void SonataData::prepare_dataset() {
@@ -193,17 +202,19 @@ void SonataData::write_spikes_header() {
 }
 
 void SonataData::write_data() {
-    if(m_remaining_steps > 0) {
-        m_io_writer->write(m_report_buffer, m_current_step, m_num_steps, m_total_elements);
-        m_remaining_steps -= m_current_step;
-        if(ReportingLib::m_rank == 0) {
-            logger->debug("Writing timestep data to file {}", m_report_name);
-            logger->debug("-Steps written: {}", m_current_step);
-            logger->debug("-Remaining steps: {}", m_remaining_steps);
-        }
-        m_last_position = 0;
-        m_current_step = 0;
+    if(m_remaining_steps <= 0) { // Nothing left to write
+        return;
     }
+
+    m_io_writer->write(m_report_buffer, m_current_step, m_num_steps, m_total_elements);
+    m_remaining_steps -= m_current_step;
+    if(ReportingLib::m_rank == 0) {
+        logger->debug("Writing timestep data to file {}", m_report_name);
+        logger->debug("-Steps written: {}", m_current_step);
+        logger->debug("-Remaining steps: {}", m_remaining_steps);
+    }
+    m_last_position = 0;
+    m_current_step = 0;
 }
 
 void SonataData::close() {
