@@ -19,9 +19,7 @@ void Node::fill_data(std::vector<double>::iterator it) {
     std::transform(m_elements.begin(), m_elements.end(), it, [](auto elem){ return *elem; });
 }
 
-void Node::refresh_pointers(refresh_function_t refresh_function) {
-    for (auto &elem: m_elements) {
-        elem = refresh_function(elem);
-    }
+void Node::refresh_pointers(std::function<double*(double*)> refresh_function) {
+    std::transform(m_elements.begin(), m_elements.end(), m_elements.begin(), refresh_function);
 }
 

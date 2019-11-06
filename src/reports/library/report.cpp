@@ -62,7 +62,7 @@ void Report::end_iteration(double timestep) {
     m_sonata_data->update_timestep(timestep);
 }
 
-void Report::refresh_pointers(refresh_function_t refresh_function) {
+void Report::refresh_pointers(std::function<double*(double*)> refresh_function) {
     for(auto& kv: *m_nodes) {
         kv.second->refresh_pointers(refresh_function);
     }

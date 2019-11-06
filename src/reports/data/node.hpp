@@ -1,9 +1,8 @@
 #pragma once
 
 #include <cstdint>
+#include <functional>
 #include <vector>
-
-typedef double* (*refresh_function_t)(double*);
 
 class Node {
 public:
@@ -13,7 +12,7 @@ public:
     uint64_t get_gid() const;
 
     void fill_data(std::vector<double>::iterator it);
-    void refresh_pointers(refresh_function_t refresh_function);
+    void refresh_pointers(std::function<double*(double*)> refresh_function);
 
     virtual void add_element(double* element_value, uint32_t element_id);
     virtual size_t get_num_elements() const { return m_elements.size(); }

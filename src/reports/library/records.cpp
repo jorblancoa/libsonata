@@ -127,7 +127,8 @@ int records_get_num_reports() {
 }
 
 void records_refresh_pointers(double* (*refresh_function)(double*)) {
-    InitReports.apply_all(&Report::refresh_pointers, refresh_function);
+    std::function<double*(double*)> fun(refresh_function); // This conversion is needed as apply_all is a magic template
+    InitReports.apply_all(&Report::refresh_pointers, fun);
 }
 
 void records_write_spikes(const std::vector<double>& spike_timestamps, const std::vector<int>& spike_node_ids) {

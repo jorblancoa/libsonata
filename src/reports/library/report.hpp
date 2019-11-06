@@ -7,8 +7,6 @@
 #include <reports/data/sonata_data.hpp>
 #include <reports/data/node.hpp>
 
-typedef double* (*refresh_function_t)(double*);
-
 class Report {
   public:
     Report(const std::string& report_name, double tstart, double tend, double dt);
@@ -32,7 +30,7 @@ class Report {
     virtual void record_data(double step);
     virtual void end_iteration(double timestep);
     virtual void flush(double time);
-    void refresh_pointers(refresh_function_t refresh_function);
+    void refresh_pointers(std::function<double*(double*)> refresh_function);
     void set_max_buffer_size(size_t buffer_size);
 
   protected:
