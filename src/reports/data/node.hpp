@@ -12,7 +12,7 @@ public:
 
     uint64_t get_gid() const;
 
-    size_t fill_data(double* data);
+    void fill_data(std::vector<double>::iterator it);
     void refresh_pointers(refresh_function_t refresh_function);
 
     virtual void add_element(double* element_value, uint32_t element_id);

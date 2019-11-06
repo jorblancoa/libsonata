@@ -87,16 +87,15 @@ void SonataData::record_data(double step, const std::vector<uint64_t>& node_ids)
         logger->trace("RANK={} Recording data for step={} last_step_recorded={} first GID={} buffer_size={} and offset={}",
                     ReportingLib::m_rank, step, m_last_step_recorded, node_ids[0], m_buffer_size, local_position);
     }
-    int written;
     for (auto &kv: *m_nodes) {
         int current_gid = kv.first;
         if(node_ids.size() == m_nodes->size()) {
             // Record every node
-            written = kv.second->fill_data(&m_report_buffer[local_position]);
+            kv.second->fill_data(m_report_buffer.begin() + local_position);
         } else {
             // Check if node is set to be recorded (found in nodeids)
             if (std::find(node_ids.begin(), node_ids.end(), current_gid) != node_ids.end()) {
-                written = kv.second->fill_data(&m_report_buffer[local_position]);
+                kv.second->fill_data(m_report_buffer.begin() + local_position);
             }
         }
         local_position += kv.second->get_num_elements();
@@ -114,10 +113,9 @@ void SonataData::record_data(double step) {
         logger->trace("RANK={} Recording data for step={} last_step_recorded={} buffer_size={} and offset={}", 
                     ReportingLib::m_rank, step, m_last_step_recorded, m_buffer_size, local_position);
     }
-    int written;
     for (auto &kv: *m_nodes) {
         int current_gid = kv.first;
-        written = kv.second->fill_data(&m_report_buffer[local_position]);
+        kv.second->fill_data(m_report_buffer.begin() + local_position);
         local_position += kv.second->get_num_elements();
     }
     m_current_step++;
