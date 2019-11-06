@@ -37,7 +37,8 @@ int records_add_var_with_mapping(const char* report_name, uint64_t node_id, doub
     uint32_t element_id = mapping_value[0];
     try {
         auto report = InitReports.get_report(report_name);
-        report->add_variable(node_id, voltage, element_id);
+        auto node = report->get_node(node_id);
+        node->add_element(voltage, element_id);
     } catch (const std::exception& err) {
         logger->error(err.what());
     }

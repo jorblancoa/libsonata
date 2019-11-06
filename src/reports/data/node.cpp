@@ -1,5 +1,3 @@
-#include <iostream>
-
 #include "node.hpp"
 
 Node::Node(uint64_t gid)

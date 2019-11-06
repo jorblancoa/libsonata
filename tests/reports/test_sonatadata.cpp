@@ -10,21 +10,21 @@ SCENARIO( "Test SonataData class", "[SonataData][IOWriter]" ) {
         double tstart = 0.0;
         double tend = 3.0;
         records_set_atomic_step(dt);
-        using nodes_t = std::map<uint64_t, Node>;
-        Node node{1};
+        using nodes_t = std::map<uint64_t, std::shared_ptr<Node>>;
+        auto node = std::make_shared<Node>(1);
         double element = 10;
         double element2 = 12;
-        node.add_element(&element, 0);
-        node.add_element(&element2, 1);
-        Node node2{2};
-        node2.add_element(&element, 10);
-        node2.add_element(&element2, 11);
-        node2.add_element(&element2, 12);
-        Node node42{42};
+        node->add_element(&element, 0);
+        node->add_element(&element2, 1);
+        auto node2 = std::make_shared<Node>(2);
+        node2->add_element(&element, 10);
+        node2->add_element(&element2, 11);
+        node2->add_element(&element2, 12);
+        auto node42 = std::make_shared<Node>(42);
         std::vector<double> elements {34.1, 55.21, 3.141592, 44, 2124, 42.42};
         int i = 20;
         for(double& elem: elements) {
-            node42.add_element(&elem, i);
+            node42->add_element(&elem, i);
             ++i;
         }
         WHEN("We record some data and prepare the dataset for a big enough max buffer size") {
