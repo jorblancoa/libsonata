@@ -62,11 +62,11 @@ void SonataData::prepare_buffer(size_t max_buffer_size) {
         logger->debug("-Max Buffer size: {}", max_buffer_size);
     }
 
-    size_t m_buffer_size = m_total_elements * (m_steps_to_write);
-    m_report_buffer.resize(m_buffer_size);
+    size_t buffer_size = m_total_elements * m_steps_to_write;
+    m_report_buffer.resize(buffer_size);
 
     if(ReportingLib::m_rank == 0) {
-        logger->debug("-Buffer size: {}", m_buffer_size);
+        logger->debug("-Buffer size: {}", buffer_size);
     }
 }
 
@@ -93,7 +93,7 @@ void SonataData::record_data(double step, const std::vector<uint64_t>& node_ids)
                     ReportingLib::m_rank, step, m_last_step_recorded, node_ids[0], m_report_buffer.size(), local_position);
     }
     for (auto &kv: *m_nodes) {
-        int current_gid = kv.first;
+        uint64_t current_gid = kv.second->get_gid();
         if(node_ids.size() == m_nodes->size()) {
             // Record every node
             kv.second->fill_data(m_report_buffer.begin() + local_position);
