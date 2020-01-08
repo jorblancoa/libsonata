@@ -10,7 +10,6 @@ mkdir build
 cd build
 cmake                           \
     -DCMAKE_BUILD_TYPE=Release  \
-    -DEXTLIB_FROM_SUBMODULES=ON \
     -DSONATA_CXX_WARNINGS=ON    \
     ..
 make -j2

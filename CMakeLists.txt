@@ -36,7 +36,6 @@ set(SONATA_VERSION_ABI ${CMAKE_MATCH_1})
 
 project(sonata VERSION ${SONATA_VERSION})
 
-option(EXTLIB_FROM_SUBMODULES "Use Git submodules for header-only dependencies" OFF)
 option(SONATA_PYTHON "Build Python extensions" OFF)
 option(${PROJECT_NAME}_CXX_WARNINGS "Compile C++ with warnings as errors" ON)
 
@@ -96,14 +95,10 @@ else()
     endif()
 endif()
 
-if (EXTLIB_FROM_SUBMODULES)
-    add_subdirectory(extlib EXCLUDE_FROM_ALL)
-else()
-    find_package(fmt REQUIRED)
-    find_package(HighFive REQUIRED)
-    find_package(Catch2 REQUIRED)
-    find_package(spdlog REQUIRED)
-endif()
+find_package(fmt REQUIRED)
+find_package(HighFive REQUIRED)
+find_package(Catch2 REQUIRED)
+find_package(spdlog REQUIRED)
 
 set(spdlog_include_directory ${PROJECT_SOURCE_DIR}/extlib/spdlog/include)
 
@@ -209,7 +204,7 @@ install(EXPORT sonata-targets
 # =============================================================================
 
 enable_testing()
-include(extlib/Catch2/contrib/Catch.cmake)
+include(Catch)
 add_subdirectory(tests)
 
 if (ENABLE_COVERAGE)
