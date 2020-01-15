@@ -209,7 +209,12 @@ install(EXPORT sonata-targets
 # =============================================================================
 
 enable_testing()
-include(extlib/Catch2/contrib/Catch.cmake)
+if(EXTLIB_FROM_SUBMODULES)
+    include(extlib/Catch2/contrib/Catch.cmake)
+else()
+    include(Catch)
+endif()
+
 add_subdirectory(tests)
 
 if (ENABLE_COVERAGE)
