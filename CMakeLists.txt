@@ -105,7 +105,11 @@ else()
     find_package(spdlog REQUIRED)
 endif()
 
-set(spdlog_include_directory ${PROJECT_SOURCE_DIR}/extlib/spdlog/include)
+if (EXTLIB_FROM_SUBMODULES)
+    set(spdlog_include_directory ${PROJECT_SOURCE_DIR}/extlib/spdlog/include)
+else()
+    get_target_property(spdlog_include_directory spdlog::spdlog INTERFACE_INCLUDE_DIRECTORIES)
+endif()
 
 # =============================================================================
 # Targets
@@ -209,7 +213,7 @@ install(EXPORT sonata-targets
 # =============================================================================
 
 enable_testing()
-if(EXTLIB_FROM_SUBMODULES)
+if (EXTLIB_FROM_SUBMODULES)
     include(extlib/Catch2/contrib/Catch.cmake)
 else()
     include(Catch)
