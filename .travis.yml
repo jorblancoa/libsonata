@@ -31,7 +31,7 @@ addons:
       - hdf5
   apt:
     packages:
-      - gcc-7
+      - g++-7
       - libhdf5-dev
       - hdf5-tools
     sources:
