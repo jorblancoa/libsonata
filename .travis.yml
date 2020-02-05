@@ -15,7 +15,6 @@ matrix:
       sudo: required
       python: 3.6
       addons: *gcc7
-
     - os: linux
     - env: GCC_VERSION=7
       dist: xenial
