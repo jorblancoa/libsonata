@@ -1,5 +1,8 @@
 language: python
 
+git:
+  depth: false
+
 addons: &gcc7
   apt:
     packages:
