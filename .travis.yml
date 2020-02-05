@@ -1,16 +1,9 @@
 language: python
-
+branches:
+  only:
+    - master
 git:
   depth: false
-
-addons: &gcc7
-  apt:
-    packages:
-      - g++-7
-      - libhdf5-dev
-      - hdf5-tools
-    sources:
-      - ubuntu-toolchain-r-test
 
 matrix:
   include:
@@ -19,37 +12,36 @@ matrix:
       dist: xenial
       sudo: required
       python: 3.6
-      addons: *gcc7
-
     - os: linux
       env: GCC_VERSION=7
       dist: xenial
       sudo: required
       python: 2.7
-      addons: *gcc7
 
     - os: osx
       osx_image: xcode10.3
       language: generic
       python: 3.6
-      addons:
-        homebrew:
-          packages:
-            - hdf5
-
     - os: osx
       osx_image: xcode10.3
       language: generic
       python: 2.7
-      addons:
-        homebrew:
-          packages:
-            - hdf5
+
+addons:
+  homebrew:
+    packages:
+      - hdf5
+  apt:
+    packages:
+      - gcc-7
+      - libhdf5-dev
+      - hdf5-tools
+    sources:
+      - ubuntu-toolchain-r-test
 
 cache:
   directories:
     - $HOME/.cache/pip
-    - $HOME/Library/Caches/Homebrew
 
 before_script:
   - if [ -n "$GCC_VERSION" ]; then export CXX="g++-${GCC_VERSION}" CC="gcc-${GCC_VERSION}"; fi

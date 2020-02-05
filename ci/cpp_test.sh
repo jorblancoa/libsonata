@@ -14,4 +14,4 @@ cmake                           \
     -DSONATA_CXX_WARNINGS=ON    \
     ..
 make -j2
-make test ARGS=-V
+make test
