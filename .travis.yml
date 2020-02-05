@@ -31,7 +31,7 @@ matrix:
       osx_image: xcode10.3
       language: generic
       python: 3.6
-      addons: *os
+      addons:
         homebrew:
           packages:
             - hdf5
@@ -60,7 +60,6 @@ install: skip
 script:
   - ci/cpp_test.sh
   - ci/python_test.sh
-
 
 deploy:
   on:
