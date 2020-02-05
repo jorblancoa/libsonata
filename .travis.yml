@@ -1,7 +1,5 @@
 language: python
-branches:
-  only:
-    - master
+
 git:
   depth: false
 
