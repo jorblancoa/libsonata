@@ -7,8 +7,15 @@ addons: &gcc7
   apt:
     packages:
       - g++-7
+      - libhdf5-dev
+      - hdf5-tools
     sources:
       - ubuntu-toolchain-r-test
+
+addons: &os
+  homebrew:
+    packages:
+      - hdf5
 
 matrix:
   include:
@@ -18,6 +25,7 @@ matrix:
       sudo: required
       python: 3.6
       addons: *gcc7
+
     - os: linux
     - env: GCC_VERSION=7
       dist: xenial
@@ -29,19 +37,25 @@ matrix:
       osx_image: xcode10.3
       language: generic
       python: 3.6
+      addons: *os
+
     - os: osx
       osx_image: xcode10.3
       language: generic
       python: 2.7
+      addons: *os
 
 cache:
   directories:
     - $HOME/.cache/pip
     - $HOME/Library/Caches/Homebrew
 
+before_script:
+  - if [ -n "$GCC_VERSION" ]; then export CXX="g++-${GCC_VERSION}" CC="gcc-${GCC_VERSION}"; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export CXX="clang++" CC="clang"; fi
+
 before_install:
   - rm -rf dist *.egg-info && python setup.py sdist
-  - if [ $TRAVIS_OS_NAME = linux ]; then sudo apt-get install libhdf5-dev; else brew install hdf5; fi
 
 install: skip
 script:
