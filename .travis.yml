@@ -15,13 +15,14 @@ addons: &gcc7
 matrix:
   include:
     - os: linux
-    - env: GCC_VERSION=7
+      env: GCC_VERSION=7
       dist: xenial
       sudo: required
       python: 3.6
       addons: *gcc7
+
     - os: linux
-    - env: GCC_VERSION=7
+      env: GCC_VERSION=7
       dist: xenial
       sudo: required
       python: 2.7
@@ -35,6 +36,7 @@ matrix:
         homebrew:
           packages:
             - hdf5
+
     - os: osx
       osx_image: xcode10.3
       language: generic
