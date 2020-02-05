@@ -12,11 +12,6 @@ addons: &gcc7
     sources:
       - ubuntu-toolchain-r-test
 
-addons: &os
-  homebrew:
-    packages:
-      - hdf5
-
 matrix:
   include:
     - os: linux
@@ -25,7 +20,6 @@ matrix:
       sudo: required
       python: 3.6
       addons: *gcc7
-
     - os: linux
     - env: GCC_VERSION=7
       dist: xenial
@@ -38,12 +32,17 @@ matrix:
       language: generic
       python: 3.6
       addons: *os
-
+        homebrew:
+          packages:
+            - hdf5
     - os: osx
       osx_image: xcode10.3
       language: generic
       python: 2.7
-      addons: *os
+      addons:
+        homebrew:
+          packages:
+            - hdf5
 
 cache:
   directories:
