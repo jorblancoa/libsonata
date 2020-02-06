@@ -101,7 +101,7 @@ SCENARIO("Test SonataReport API", "[sonatareport]") {
             REQUIRE(sonata_get_num_reports() == 3);
         }
     }
-    WHEN("We call not implemented functions"){
+    WHEN("We call not implemented functions") {
         int values[2] = {0, 1};
         std::string name = "report";
         REQUIRE(sonata_extra_mapping(name.data(), 1, 2, values) == 0);
