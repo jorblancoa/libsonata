@@ -6,6 +6,11 @@
 
 using namespace bbp::sonata;
 
+double* square_value(double* elem) {
+    *elem *= *elem;
+    return elem;
+}
+
 SCENARIO("Test Report class", "[Report]") {
     uint32_t soma_id = 42;
     uint32_t element_id = 142;
@@ -22,13 +27,17 @@ SCENARIO("Test Report class", "[Report]") {
         WHEN("We add a node and a variable to a soma report") {
             soma_report->add_node(1);
             double element_value = 10;
-            soma_report->get_node(1)->add_element(&element_value, soma_id);
+            const std::shared_ptr<Node>& node = soma_report->get_node(1);
+            node->add_element(&element_value, soma_id);
             THEN("Number of nodes and elements is 1") {
                 REQUIRE(soma_report->get_num_nodes() == 1);
                 REQUIRE(soma_report->get_total_elements() == 1);
                 REQUIRE(soma_report->node_exists(1) == true);
                 REQUIRE(soma_report->node_exists(2) == false);
                 REQUIRE(soma_report->is_empty() == false);
+            }
+            THEN("We refresh the pointers") {
+                REQUIRE_NOTHROW(soma_report->refresh_pointers(&square_value));
             }
         }
         WHEN("We add 2 elements to a given node in a soma report") {

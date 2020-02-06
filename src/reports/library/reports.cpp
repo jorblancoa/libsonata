@@ -152,7 +152,7 @@ void sonata_write_spikes(const double* timestamps,
 }
 
 // NOT REQUIRED FOR SONATA
-int sonata_extra_mapping(char*, uint64_t, int, int*) {
+int sonata_extra_mapping(const char*, uint64_t, int, int*) {
     logger->trace("Function {} NOT implemented", __FUNCTION__);
     return 0;
 }
@@ -166,7 +166,7 @@ int sonata_time_data() {
     logger->trace("Function {} NOT implemented", __FUNCTION__);
     return 0;
 }
-char* sonata_saveinit(char*, int, int*, int*, int) {
+char* sonata_saveinit(const char*, int, int*, int*, int) {
     logger->trace("Function {} NOT implemented", __FUNCTION__);
     return nullptr;
 }
@@ -180,7 +180,7 @@ void sonata_saveglobal() {
 void sonata_savestate(void) {
     logger->trace("Function NOT implemented");
 }
-char* sonata_restoreinit(char*, int*) {
+char* sonata_restoreinit(const char*, int*) {
     logger->trace("Function NOT implemented");
     return nullptr;
 }

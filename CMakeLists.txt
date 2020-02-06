@@ -65,14 +65,6 @@ endif()
 # Dependencies
 # =============================================================================
 
-if (EXTLIB_FROM_SUBMODULES)
-    add_subdirectory(extlib EXCLUDE_FROM_ALL)
-else()
-    find_package(fmt REQUIRED)
-    find_package(Catch2 REQUIRED)
-    find_package(HighFive REQUIRED)
-endif()
-
 find_package(MPI)
 if (MPI_FOUND)
     # With MPI we prefer HDF5 parallel
@@ -226,7 +218,7 @@ if (ENABLE_COVERAGE)
     SETUP_TARGET_FOR_COVERAGE_LCOV(
         NAME coverage
         EXECUTABLE ctest
-        DEPENDENCIES unittests
+        DEPENDENCIES unittests unit-tests
     )
 endif()
 

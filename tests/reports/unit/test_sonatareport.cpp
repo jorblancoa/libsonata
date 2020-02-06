@@ -101,4 +101,18 @@ SCENARIO("Test SonataReport API", "[sonatareport]") {
             REQUIRE(sonata_get_num_reports() == 3);
         }
     }
+    WHEN("We call not implemented functions"){
+        int values[2] = {0, 1};
+        std::string name = "report";
+        REQUIRE(sonata_extra_mapping(name.data(), 1, 2, values) == 0);
+        sonata_set_steps_to_buffer(10);
+        sonata_set_auto_flush(0);
+        REQUIRE(sonata_time_data() == 0);
+        REQUIRE(sonata_saveinit(name.data(), 1, values, values, 1) == nullptr);
+        REQUIRE(sonata_savebuffer(0) == nullptr);
+        sonata_saveglobal();
+        sonata_savestate();
+        REQUIRE(sonata_restoreinit(name.data(), values) == nullptr);
+        REQUIRE(sonata_restore(1, values, values) == nullptr);
+    }
 }

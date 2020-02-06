@@ -120,15 +120,15 @@ int sonata_clear();
 void sonata_set_atomic_step(double step);
 
 // NOT REQUIRED FOR SONATA
-int sonata_extra_mapping(char* report_name, uint64_t node_id, int num_values, int* values);
+int sonata_extra_mapping(const char* report_name, uint64_t node_id, int num_values, int* values);
 void sonata_set_steps_to_buffer(int steps);
 void sonata_set_auto_flush(int mode);
 int sonata_time_data();
-char* sonata_saveinit(char*, int, int*, int*, int);
+char* sonata_saveinit(const char*, int, int*, int*, int);
 char* sonata_savebuffer(int);
 void sonata_saveglobal();
 void sonata_savestate(void);
-char* sonata_restoreinit(char* save_file, int* length);
+char* sonata_restoreinit(const char* save_file, int* length);
 char* sonata_restore(uint64_t node_id, int* piece_count, int* length);
 
 #if defined(__cplusplus)
