@@ -18,6 +18,21 @@ matrix:
     - os: linux
       env:
         - GCC_VERSION=7
+        - cmake_options="-DREPORTS_ENABLE_MPI=OFF"
+      dist: xenial
+      sudo: required
+      python: 3.6
+
+    - os: linux
+      env:
+        - GCC_VERSION=7
+        - cmake_option="-DREPORTS_ENABLE_MPI=ON -DCMAKE_C_COMPILER=mpicc -DCMAKE_CXX_COMPILER=mpicxx"
+      dist: xenial
+      sudo: required
+      python: 2.7
+    - os: linux
+      env:
+        - GCC_VERSION=7
         - cmake_option="-DREPORTS_ENABLE_MPI=OFF"
       dist: xenial
       sudo: required
@@ -25,10 +40,23 @@ matrix:
 
     - os: osx
       env:
+        - cmake_option="-DREPORTS_ENABLE_MPI=ON -DCMAKE_C_COMPILER=mpicc -DCMAKE_CXX_COMPILER=mpicxx"
+      osx_image: xcode10.3
+      language: generic
+      python: 3.6
+    - os: osx
+      env:
         - cmake_option="-DREPORTS_ENABLE_MPI=OFF"
       osx_image: xcode10.3
       language: generic
       python: 3.6
+
+    - os: osx
+      env:
+        - cmake_option="-DREPORTS_ENABLE_MPI=ON -DCMAKE_C_COMPILER=mpicc -DCMAKE_CXX_COMPILER=mpicxx"
+      osx_image: xcode10.3
+      language: generic
+      python: 2.7
     - os: osx
       env:
         - cmake_option="-DREPORTS_ENABLE_MPI=OFF"
