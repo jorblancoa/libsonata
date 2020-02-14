@@ -69,6 +69,7 @@ addons:
     packages:
       - hdf5
       - openmpi
+      - iltommi/brews/hdf5-parallel
   apt:
     packages:
       - g++-7
