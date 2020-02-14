@@ -56,7 +56,6 @@ addons:
   homebrew:
     packages:
       - hdf5
-      - openmpi
   apt:
     packages:
       - g++-7
