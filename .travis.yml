@@ -64,7 +64,7 @@ before_install:
 
 install: skip
 script:
-  - ci/cpp_test.sh ${cmake_option}
+  - ci/cpp_test.sh "${cmake_option}"
   - ci/python_test.sh
 
 deploy:
