@@ -1,7 +1,7 @@
 language: python
-branches:
-  only:
-    - master
+#branches:
+#  only:
+#    - master
 
 git:
   depth: false
@@ -9,7 +9,9 @@ git:
 matrix:
   include:
     - os: linux
-      env: GCC_VERSION=7
+      env:
+        - GCC_VERSION=7
+        - cmake_option="-DREPORTS_ENABLE_MPI=ON"
       dist: xenial
       sudo: required
       python: 3.6
@@ -32,11 +34,15 @@ addons:
   homebrew:
     packages:
       - hdf5
+      - openmpi
   apt:
     packages:
       - g++-7
       - libhdf5-dev
+      - libhdf5-openmpi-dev
       - hdf5-tools
+      - libopenmpi-dev
+      - openmpi-bin
     sources:
       - ubuntu-toolchain-r-test
 
@@ -52,7 +58,7 @@ before_install:
 
 install: skip
 script:
-  - ci/cpp_test.sh
+  - ci/cpp_test.sh ${cmake_option}
   - ci/python_test.sh
 
 deploy:
