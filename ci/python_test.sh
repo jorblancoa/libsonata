@@ -6,7 +6,7 @@ VENV=env
 
 python -m pip install virtualenv --upgrade
 rm -rf "$VENV"
-virtualenv "$VENV" --seeder=pip
+virtualenv "$VENV" --python=python3 --seeder=pip
 
 set +u  # ignore errors in virtualenv's activate
 source "$VENV/bin/activate"
