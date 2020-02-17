@@ -12,7 +12,7 @@ set +u  # ignore errors in virtualenv's activate
 source "$VENV/bin/activate"
 set -u
 
-pip install --upgrade pip
+python -m pip install --upgrade pip
 
 # install
 pip install .

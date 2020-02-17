@@ -1,7 +1,8 @@
 language: python
-#branches:
-#  only:
-#    - master
+branches:
+  only:
+    - reports
+  #  - master
 
 git:
   depth: false
