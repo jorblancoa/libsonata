@@ -6,7 +6,7 @@ VENV=env
 
 pip install virtualenv
 rm -rf "$VENV"
-virtualenv "$VENV"
+virtualenv "$VENV" --seeder=pip
 
 set +u  # ignore errors in virtualenv's activate
 source "$VENV/bin/activate"
