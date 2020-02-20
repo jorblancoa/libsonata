@@ -66,7 +66,7 @@ endif()
 # =============================================================================
 
 find_package(MPI)
-if (MPI_FOUND)
+if (MPI_CXX_FOUND)
     # With MPI we prefer HDF5 parallel
     set(HDF5_PREFER_PARALLEL "ON")
 endif()
@@ -76,7 +76,7 @@ if (HDF5_FOUND)
     set(HDF5_LIBS ${HDF5_LIBRARIES})
 endif()
 
-if (MPI_FOUND)
+if (MPI_CXX_FOUND)
     if (HDF5_FOUND)
         if (HDF5_IS_PARALLEL)
             set(HAVE_MPI TRUE)
