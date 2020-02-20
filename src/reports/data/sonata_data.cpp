@@ -55,7 +55,8 @@ void SonataData::prepare_buffer(size_t max_buffer_size) {
     // Calculate the timesteps that fit given the buffer size
     {
         uint32_t max_steps_to_write = max_buffer_size / (sizeof(double) * total_elements_);
-        uint32_t common_max_steps_to_write = Implementation::get_max_steps_to_write(report_name_, max_steps_to_write);
+        uint32_t common_max_steps_to_write =
+            Implementation::get_max_steps_to_write(report_name_, max_steps_to_write);
         if (common_max_steps_to_write < num_steps_) {  // More steps asked that buffer can contain
             if (common_max_steps_to_write < SonataReport::min_steps_to_record_) {
                 steps_to_write_ = SonataReport::min_steps_to_record_;
