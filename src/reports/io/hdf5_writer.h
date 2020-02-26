@@ -20,7 +20,7 @@ class HDF5Writer
     void configure_dataset(const std::string& dataset_name,
                            uint32_t total_steps,
                            uint32_t total_elements);
-    void write_2D(const std::vector<double>& buffer,
+    void write_2D(const std::vector<float>& buffer,
                   uint32_t steps_to_write,
                   uint32_t total_elements);
     template <typename T>

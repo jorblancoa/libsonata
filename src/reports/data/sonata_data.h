@@ -35,7 +35,7 @@ class SonataData
     void record_data(double step);
     void check_and_write(double timestep);
 
-    const std::vector<double>& get_report_buffer() const noexcept {
+    const std::vector<float>& get_report_buffer() const noexcept {
         return report_buffer_;
     }
 
@@ -58,7 +58,7 @@ class SonataData
   private:
     std::string report_name_;
     std::string population_name_;
-    std::vector<double> report_buffer_;
+    std::vector<float> report_buffer_;
     uint32_t total_elements_ = 0;
     uint32_t num_steps_ = 0;
     uint32_t steps_to_write_ = 0;
