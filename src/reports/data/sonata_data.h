@@ -73,6 +73,7 @@ class SonataData
     std::vector<uint64_t> node_ids_;
     std::vector<uint64_t> index_pointers_;
     std::vector<uint32_t> element_ids_;
+    std::array<double, 3> time_;
 
     std::vector<double> spike_timestamps_;
     std::vector<uint64_t> spike_node_ids_;

@@ -14,9 +14,12 @@ class HDF5Writer
   public:
     explicit HDF5Writer(const std::string& report_name);
     void configure_group(const std::string& group_name);
-    void configure_attribute(const std::string& group_name,
+    void configure_attribute(const std::string& dataset_name,
                              const std::string& attribute_name,
                              const std::string& attribute_value);
+    void configure_enum_attribute(const std::string& group_name,
+                                  const std::string& attribute_name,
+                                  const std::string& attribute_value);
     void configure_dataset(const std::string& dataset_name,
                            uint32_t total_steps,
                            uint32_t total_elements);
@@ -25,6 +28,7 @@ class HDF5Writer
                   uint32_t total_elements);
     template <typename T>
     void write(const std::string& name, const std::vector<T>& buffer);
+    void write_time(const std::string& dataset_name, const std::array<double, 3>& buffer);
     void close();
 
   private:

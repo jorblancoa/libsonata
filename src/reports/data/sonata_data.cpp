@@ -24,6 +24,7 @@ SonataData::SonataData(const std::string& report_name,
     , nodes_(nodes) {
     prepare_buffer(max_buffer_size);
     index_pointers_.resize(nodes->size());
+    time_ = {tstart, tend, dt};
 
     reporting_period_ = static_cast<int>(dt / SonataReport::atomic_step_);
     last_step_recorded_ = tstart / SonataReport::atomic_step_;
@@ -231,10 +232,13 @@ void SonataData::write_report_header() {
     hdf5_writer_->configure_dataset(reports_population_group + "/data",
                                     num_steps_,
                                     total_elements_);
+    hdf5_writer_->configure_attribute(reports_population_group + "/data", "units", "mV");
 
     hdf5_writer_->write(reports_population_group + "/mapping/node_ids", node_ids_);
     hdf5_writer_->write(reports_population_group + "/mapping/index_pointers", index_pointers_);
     hdf5_writer_->write(reports_population_group + "/mapping/element_ids", element_ids_);
+    hdf5_writer_->write_time(reports_population_group + "/mapping/time", time_);
+    hdf5_writer_->configure_attribute(reports_population_group + "/mapping/time", "units", "ms");
 }
 
 void SonataData::write_spikes_header(const std::string& order_by) {
@@ -246,12 +250,13 @@ void SonataData::write_spikes_header(const std::string& order_by) {
     const std::string spikes_population_group = "/spikes/" + population_name_;
     hdf5_writer_->configure_group("/spikes");
     hdf5_writer_->configure_group(spikes_population_group);
-    hdf5_writer_->configure_attribute(spikes_population_group, "sorting", order_by);
+    hdf5_writer_->configure_enum_attribute(spikes_population_group, "sorting", order_by);
     hsize_t timestamps_size = Implementation::get_global_dims(report_name_,
                                                               spike_timestamps_.size());
     if (timestamps_size > 0) {
         Implementation::sort_spikes(spike_timestamps_, spike_node_ids_, order_by);
         hdf5_writer_->write(spikes_population_group + "/timestamps", spike_timestamps_);
+        hdf5_writer_->configure_attribute(spikes_population_group + "/timestamps", "units", "ms");
         hdf5_writer_->write(spikes_population_group + "/node_ids", spike_node_ids_);
     }
 }
