@@ -50,6 +50,9 @@ class SONATA_API Selection
     const Ranges ranges_;
 };
 
+bool SONATA_API operator==(const Selection&, const Selection&);
+bool SONATA_API operator!=(const Selection&, const Selection&);
+
 template <typename Iterator>
 Selection Selection::fromValues(Iterator first, Iterator last) {
     Selection::Ranges ranges;
@@ -90,6 +93,11 @@ class SONATA_API Population
      * Total number of elements
      */
     uint64_t size() const;
+
+    /**
+     * Selection covering all elements
+     */
+    Selection selectAll() const;
 
     /**
      * All attribute names (CSV columns + required attributes + union of attributes in groups)
@@ -158,6 +166,7 @@ class SONATA_API Population
      * @throw if there is no such attribute for the population
      */
     std::vector<std::string> enumerationValues(const std::string& name) const;
+
     /**
      * Get attribute data type, optionally translating enumeration types
 

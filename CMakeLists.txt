@@ -39,14 +39,16 @@ project(sonata VERSION ${SONATA_VERSION})
 option(EXTLIB_FROM_SUBMODULES "Use Git submodules for header-only dependencies" OFF)
 option(SONATA_PYTHON "Build Python extensions" OFF)
 option(${PROJECT_NAME}_CXX_WARNINGS "Compile C++ with warnings as errors" ON)
+option(REPORTS_ENABLE_MPI "Enable MPI-based execution for the reporting" OFF)
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/CMake)
 set(CMAKE_SKIP_INSTALL_ALL_DEPENDENCY true)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(SONATA_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
+set(SONATA_SRC_DIR ${PROJECT_SOURCE_DIR}/src)
 
 if(SONATA_CXX_WARNINGS)
   set(SONATA_COMPILE_OPTIONS -Wall -Wextra -pedantic -Werror)
@@ -64,11 +66,45 @@ endif()
 # Dependencies
 # =============================================================================
 
+if(REPORTS_ENABLE_MPI)
+    find_package(MPI REQUIRED)
+    if (MPI_FOUND)
+        # With MPI we prefer HDF5 parallel
+        set(HDF5_PREFER_PARALLEL "ON")
+    endif()
+
+    find_package(HDF5)
+    if (MPI_FOUND)
+        if (HDF5_FOUND)
+            if (HDF5_IS_PARALLEL)
+                set(HAVE_MPI TRUE)
+                # When MPI and HDF5 parallel are found, enable mpi in the report library
+                add_definitions(-DHAVE_MPI)
+                message(STATUS "Both MPI and HDF5 parallel found, using reporting parallel implementation")
+            else()
+                message(STATUS "MPI and HDF5 found, but no parallel IO support for HDF5, using reporting serial implementation")
+            endif()
+        endif()
+    else()
+        if (HDF5_FOUND)
+            # Avoid NOTFOUND error
+            set(MPI_CXX_LIBRARIES "")
+            message(STATUS "HDF5 found, Using reporting serial implementation")
+        else()
+            message(FATAL_ERROR "No MPI or HDF5 found")
+        endif()
+    endif()
+
+endif()
+
 if (EXTLIB_FROM_SUBMODULES)
     add_subdirectory(extlib EXCLUDE_FROM_ALL)
+    include(extlib/Catch2/contrib/Catch.cmake)
 else()
     find_package(fmt REQUIRED)
     find_package(HighFive REQUIRED)
+    find_package(Catch2 REQUIRED)
+    find_package(spdlog REQUIRED)
 endif()
 
 # =============================================================================
@@ -92,6 +128,7 @@ configure_file (
 
 add_library(sonata_shared SHARED ${SONATA_SRC})
 add_library(sonata_static STATIC ${SONATA_SRC})
+add_subdirectory(src/reports)
 
 foreach(TARGET sonata_shared sonata_static)
     set_target_properties(${TARGET}
@@ -174,10 +211,11 @@ add_subdirectory(tests)
 
 if (ENABLE_COVERAGE)
     include(CodeCoverage)
-    set(COVERAGE_GCOVR_EXCLUDES ${PROJECT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR}/extlib)
-    setup_target_for_coverage_gcovr_xml(
+    set(COVERAGE_LCOV_EXCLUDES '/usr/*' '${PROJECT_SOURCE_DIR}/include/*' '${PROJECT_SOURCE_DIR}/extlib/*')
+    SETUP_TARGET_FOR_COVERAGE_LCOV(
         NAME coverage
         EXECUTABLE ctest
+        DEPENDENCIES unittests reports_unit_tests reports_integration_test
     )
 endif()
 

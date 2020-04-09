@@ -1,2 +1,8 @@
 #define CATCH_CONFIG_MAIN
-#include "contrib/catch.hpp"
+#include <catch2/catch.hpp>
+
+#include <bbp/sonata/common.h>
+
+TEST_CASE("SONATA", "version") {
+    CHECK(!bbp::sonata::version().empty());
+}

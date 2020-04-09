@@ -12,7 +12,6 @@
 #include <memory>
 #include <string>
 
-
 namespace py = pybind11;
 
 using namespace pybind11::literals;
@@ -162,6 +161,9 @@ py::class_<Population, std::shared_ptr<Population>> bindPopulationClass(py::modu
         .def("__len__",
              &Population::size,
              imbueElementName("Get the total number of {elem}s in the population").c_str())
+        .def("select_all",
+             &Population::selectAll,
+             imbueElementName("Get selection of all {elem}s in the population").c_str())
         .def("enumeration_values",
              &Population::enumerationValues,
              py::arg("name"),
@@ -299,7 +301,6 @@ py::class_<Storage> bindStorageClass(py::module& m, const char* clsName, const c
              "name"_a,
              fmt::format("Get {} for a given population name", popClsName).c_str());
 }
-
 }  // unnamed namespace
 
 
@@ -327,9 +328,29 @@ PYBIND11_MODULE(libsonata, m) {
         .def(
             "__bool__",
             [](const Selection& obj) { return !obj.empty(); },
-            "If EdgeSelection is not empty");
+            "If EdgeSelection is not empty")
 
-    bindPopulationClass<NodePopulation>(m, "NodePopulation", "Collection of nodes with attributes");
+        .def("__eq__", &bbp::sonata::operator==, "Compare selection contents are equal")
+
+        .def("__ne__", &bbp::sonata::operator!=, "Compare selection contents are not equal");
+
+    bindPopulationClass<NodePopulation>(m, "NodePopulation", "Collection of nodes with attributes")
+        .def(
+            "match_values",
+            [](NodePopulation& obj, const std::string& name, const size_t value) {
+                return obj.matchAttributeValues(name, value);
+            },
+            "name"_a,
+            "value"_a,
+            "Return selection where the attribute `name` has values matching the int `value`")
+        .def(
+            "match_values",
+            [](NodePopulation& obj, const std::string& name, const std::string& value) {
+                return obj.matchAttributeValues(name, value);
+            },
+            "name"_a,
+            "value"_a,
+            "Return selection where the attribute `name` has values matching the string `value`");
 
     bindStorageClass<NodeStorage>(m, "NodeStorage", "NodePopulation");
 

@@ -1,5 +1,4 @@
-#include "contrib/catch.hpp"
-
+#include <catch2/catch.hpp>
 #include <bbp/sonata/edges.h>
 
 #include <cstdio>
@@ -24,17 +23,6 @@ std::ostream& operator<<(std::ostream& oss, const Selection& selection) {
 }
 
 }  // namespace std
-
-
-namespace bbp {
-namespace sonata {
-
-bool operator==(const Selection& lhs, const Selection& rhs) {
-    return lhs.ranges() == rhs.ranges();
-}
-
-}  // namespace sonata
-}  // namespace bbp
 
 
 TEST_CASE("EdgePopulation", "[edges]") {
@@ -73,6 +61,12 @@ TEST_CASE("EdgePopulation", "[edges]") {
 }
 
 
+TEST_CASE("EdgePopulationSelectAll", "[base]") {
+    const EdgePopulation population("./data/edges1.h5", "", "edges-AB");
+    CHECK(population.selectAll().flatSize() == 6);
+}
+
+
 namespace {
 
 // TODO: remove after switching to C++17
@@ -101,9 +95,20 @@ TEST_CASE("EdgePopulation::writeIndices", "[edges]") {
 
     try {
         EdgePopulation::writeIndices(dstFilePath, "edges-AB", 4, 4);
-        const EdgePopulation population(dstFilePath, "", "edges-AB");
-        CHECK(population.afferentEdges({1, 2}) == Selection({{0, 4}, {5, 6}}));
-        CHECK(population.efferentEdges({1, 2}) == Selection({{0, 4}}));
+        {
+            const EdgePopulation population(dstFilePath, "", "edges-AB");
+            CHECK(population.afferentEdges({1, 2}) == Selection({{0, 4}, {5, 6}}));
+            CHECK(population.efferentEdges({1, 2}) == Selection({{0, 4}}));
+        }
+
+        CHECK_THROWS_AS(
+            EdgePopulation::writeIndices(dstFilePath, "edges-AB", 4, 4, /* overwrite */ false),
+            SonataError);
+
+        // Not implemented yet
+        CHECK_THROWS_AS(
+            EdgePopulation::writeIndices(dstFilePath, "edges-AB", 4, 4, /* overwrite */ true),
+            SonataError);
     } catch (...) {
         try {
             std::remove(dstFilePath.c_str());

@@ -1,4 +1,4 @@
-#include "contrib/catch.hpp"
+#include <catch2/catch.hpp>
 
 #include <bbp/sonata/nodes.h>
 
@@ -78,11 +78,17 @@ TEST_CASE("NodePopulation", "[base]") {
     CHECK(population._attributeDataType("A-uint16") == "uint16_t");
     CHECK(population._attributeDataType("A-uint8") == "uint8_t");
     CHECK(population._attributeDataType("A-string") == "string");
+    CHECK(population._attributeDataType("E-mapping-good", /* translate_enumeration */ true) ==
+          "string");
     CHECK_THROWS_AS(population._attributeDataType("A-enum"), SonataError);
     CHECK_THROWS_AS(population._attributeDataType("no-such-attribute"), SonataError);
 
     CHECK(population.getEnumeration<size_t>("E-mapping-good", Selection({{0, 1}, {2, 3}})) ==
           std::vector<size_t>{2, 2});
+    CHECK_THROWS_AS(population.getEnumeration<size_t>("no-such-enum", Selection({{1, 2}})),
+                    SonataError);
+    CHECK_THROWS_AS(population.getEnumeration<std::string>("E-mapping-good", Selection({{1, 2}})),
+                    SonataError);
 
     CHECK(population.getAttribute<size_t>("E-mapping-good", Selection({{0, 1}, {2, 3}})) ==
           std::vector<size_t>{2, 2});
@@ -90,6 +96,7 @@ TEST_CASE("NodePopulation", "[base]") {
     CHECK(population.getAttribute<std::string>("E-mapping-good", Selection({{0, 1}})) ==
           std::vector<std::string>{"C"});
 
+    CHECK_THROWS_AS(population.enumerationValues("no-such-enum"), SonataError);
     CHECK(population.enumerationValues("E-mapping-good") ==
           std::vector<std::string>{"A", "B", "C"});
 
@@ -144,4 +151,51 @@ TEST_CASE("NodePopulationMove", "[base]") {
     NodePopulation population("./data/nodes1.h5", "", "nodes-A");
     NodePopulation pop2 = std::move(population);
     CHECK(pop2.name() == "nodes-A");
+}
+
+TEST_CASE("NodePopulationSelectAll", "[base]") {
+    NodePopulation population("./data/nodes1.h5", "", "nodes-A");
+    CHECK(population.selectAll().flatSize() == 6);
+}
+
+TEST_CASE("NodePopulationmatchAttributeValues", "[base]") {
+    NodePopulation population("./data/nodes1.h5", "", "nodes-A");
+
+    SECTION("String") {
+        auto sel = population.matchAttributeValues<std::string>("attr-Z", "bb");
+        CHECK(sel.flatSize() == 1);
+        CHECK(Selection::fromValues({1}) == sel);
+
+        CHECK_THROWS_AS(population.matchAttributeValues<std::string>("attr-Y", "bb"), SonataError);
+    }
+
+    SECTION("Enumeration") {
+        auto sel0 = population.matchAttributeValues("E-mapping-good", std::string("C"));
+        CHECK(sel0.flatSize() == 4);
+        CHECK(Selection::fromValues({0, 2, 4, 5}) == sel0);
+
+        auto sel1 = population.matchAttributeValues("E-mapping-good",
+                                                    std::string("does-not-exist"));
+        CHECK(Selection({}) == sel1);
+    }
+
+    SECTION("Float attribute") {
+        CHECK_THROWS_AS(population.matchAttributeValues("attr-X", 2), SonataError);
+    }
+}
+
+TEMPLATE_TEST_CASE("NodePopulationmatchAttributeValues",
+                   "Numeric",
+                   int8_t,
+                   uint8_t,
+                   int16_t,
+                   uint16_t,
+                   int32_t,
+                   uint32_t,
+                   int64_t,
+                   uint64_t) {
+    NodePopulation population("./data/nodes1.h5", "", "nodes-A");
+    auto sel = population.matchAttributeValues<TestType>("attr-Y", 23);
+    CHECK(sel.flatSize() == 1);
+    CHECK(Selection::fromValues({2}) == sel);
 }

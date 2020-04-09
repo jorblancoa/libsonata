@@ -1,4 +1,4 @@
-#include "contrib/catch.hpp"
+#include <catch2/catch.hpp>
 
 #include <bbp/sonata/population.h>
 
@@ -30,5 +30,21 @@ TEST_CASE("Selection", "[base]") {
         CHECK(selection.flatten() == std::vector<EdgeID>{3, 4, 0, 1, 2});
         CHECK(selection.flatSize() == 5);
         CHECK(!selection.empty());
+    }
+    SECTION("comparison") {
+        const auto empty = Selection({});
+        const auto range_selection = Selection({{0, 2}, {3, 4}});
+        const auto values_selection = Selection::fromValues({1, 3, 4, 1});
+        const auto values_selection1 = Selection::fromValues({1, 3, 4, 1});
+
+        CHECK(empty == empty);
+        CHECK(empty != range_selection);
+        CHECK(empty != values_selection);
+
+        CHECK(range_selection == range_selection);
+        CHECK(range_selection != values_selection);
+
+        CHECK(values_selection == values_selection);
+        CHECK(values_selection == values_selection1);
     }
 }

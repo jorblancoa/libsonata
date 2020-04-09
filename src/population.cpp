@@ -81,6 +81,17 @@ bool Selection::empty() const {
 
 //--------------------------------------------------------------------------------------------------
 
+
+bool operator==(const Selection& lhs, const Selection& rhs) {
+    return lhs.ranges() == rhs.ranges();
+}
+
+
+bool operator!=(const Selection& lhs, const Selection& rhs) {
+    return !(lhs == rhs);
+}
+
+
 namespace {
 
 std::string _getDataType(const HighFive::DataSet& dset, const std::string& name) {
@@ -143,6 +154,11 @@ uint64_t Population::size() const {
 }
 
 
+Selection Population::selectAll() const {
+    return Selection({{0, size()}});
+}
+
+
 const std::set<std::string>& Population::attributeNames() const {
     return impl_->attributeNames;
 }
@@ -156,7 +172,10 @@ const std::set<std::string>& Population::enumerationNames() const {
 std::vector<std::string> Population::enumerationValues(const std::string& name) const {
     HDF5_LOCK_GUARD
     const auto dset = impl_->getLibraryDataSet(name);
-    return _readSelection<std::string>(dset, Selection({{0, dset.getSpace().getDimensions()[0]}}));
+
+    // Note: can't use select all, because our locks aren't re-entrant
+    const auto selection = Selection({{0, dset.getSpace().getDimensions()[0]}});
+    return _readSelection<std::string>(dset, selection);
 }
 
 

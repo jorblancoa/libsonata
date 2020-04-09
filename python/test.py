@@ -3,7 +3,7 @@ import unittest
 
 import numpy as np
 
-from libsonata import *
+from libsonata import EdgeStorage, NodeStorage, Selection, SonataError
 
 
 PATH = os.path.dirname(os.path.realpath(__file__))
@@ -33,6 +33,23 @@ class TestSelection(unittest.TestCase):
     def test_from_values_empty(self):
         self.assertFalse(Selection([]))
         self.assertFalse(Selection(np.array([], dtype=np.uint64)))
+
+    def test_comparison(self):
+        empty = Selection([])
+        range_selection = Selection(((0, 2), (3, 4)))
+        values_selection = Selection([1, 3, 4, 1])
+
+        self.assertEqual(empty, empty)
+        self.assertNotEqual(empty, range_selection)
+        self.assertNotEqual(empty, values_selection)
+
+        self.assertEqual(range_selection, range_selection)
+        self.assertNotEqual(range_selection, values_selection)
+
+        self.assertEqual(values_selection, values_selection)
+
+        values_selection1 = Selection([1, 3, 4, 1])
+        self.assertEqual(values_selection, values_selection1)
 
 
 class TestNodePopulation(unittest.TestCase):
@@ -141,6 +158,25 @@ class TestNodePopulation(unittest.TestCase):
             0
         )
 
+    def test_select_all(self):
+        self.assertEqual(self.test_obj.select_all().flat_size, 6)
+
+    def test_match_values(self):
+        # string
+        self.assertEqual(self.test_obj.match_values("attr-Z", "bb").flatten().tolist(),
+                         [1])
+
+        # enum
+        self.assertEqual(self.test_obj.match_values("E-mapping-good", "C").flatten().tolist(),
+                         [0, 2, 4, 5])
+
+        # int
+        self.assertEqual(self.test_obj.match_values("attr-Y", 23).flatten().tolist(),
+                         [2, ])
+
+        # float
+        self.assertRaises(TypeError, self.test_obj.match_values, "attr-Y", 23.)
+
 
 class TestEdgePopulation(unittest.TestCase):
     def setUp(self):
@@ -172,6 +208,9 @@ class TestEdgePopulation(unittest.TestCase):
     def test_connecting_edges(self):
         self.assertEqual(self.test_obj.connecting_edges([1, 2], [1, 2]).ranges, [(0, 4)])
         self.assertEqual(self.test_obj.connecting_edges(1, 1).ranges, [(0, 1)])
+
+    def test_select_all(self):
+        self.assertEqual(self.test_obj.select_all().flat_size, 6)
 
 
 if __name__ == '__main__':
